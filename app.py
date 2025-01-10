@@ -162,9 +162,20 @@ def validate_device_json(data):
 @app.route('/api/devices/export', methods=['GET'])
 def export_devices():
     devices = Device.query.all()
-    devices_data = [device.to_dict(include_created_at=False) for device in devices]
+    # 去掉id字段
+    devices_data = [{
+        'name': device.name,
+        'ip': device.ip,
+        'mac': device.mac,
+        'broadcast': device.broadcast
+    } for device in devices]
+    
+    # 添加日期时间后缀
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f'devices_export_{timestamp}.json'  # 导出的JSON名称后添加日期和时间后缀
+    
     response = jsonify(devices_data)
-    response.headers['Content-Disposition'] = 'attachment; filename=devices_export.json'
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     return response
 
 @app.route('/api/devices/import', methods=['POST'])
