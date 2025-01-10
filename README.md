@@ -1,5 +1,5 @@
 # Wake On LAN Manager
-[中文文档](README_zh.md)
+[中文文档](README.zh.md)
 
 A Flask-based web application for managing and monitoring Wake-on-LAN enabled devices on your local network.
 
