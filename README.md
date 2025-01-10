@@ -1,89 +1,89 @@
-# Wake On LAN 管理器 
-[中文版本](README_zh.md)
+# Wake On LAN Manager
+[中文文档](README_zh.md)
 
-这是一个基于Flask的Web应用程序，用于管理和监控局域网内支持Wake-on-LAN功能的设备。
+A Flask-based web application for managing and monitoring Wake-on-LAN enabled devices on your local network.
 
-## 功能特点
+## Features
 
-- 添加和管理网络设备
-- 发送Wake-on-LAN魔术包唤醒设备
-- 实时监控设备在线状态
-- 编辑设备信息
-- 删除设备
-- 美观的响应式Web界面
-- SQLite数据库存储设备信息
+- Add and manage network devices
+- Send Wake-on-LAN magic packets to wake up devices
+- Real-time device status monitoring
+- Edit device information
+- Delete devices
+- Beautiful responsive web interface
+- SQLite database for device information storage
 
-## 技术栈
+## Tech Stack
 
-- 后端：Flask + SQLAlchemy
-- 前端：Bootstrap 5 + SweetAlert2
-- 数据库：SQLite
-- 容器化：Docker + Docker Compose
+- Backend: Flask + SQLAlchemy
+- Frontend: Bootstrap 5 + SweetAlert2
+- Database: SQLite
+- Containerization: Docker + Docker Compose
 
-## 安装说明
+## Installation
 
-1. 创建虚拟环境（可选）：
+1. Create virtual environment (optional):
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 ```
 
-2. 安装依赖：
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 运行应用：
+3. Run the application:
 ```bash
 python app.py
 ```
 
-4. 访问应用：
-打开浏览器访问 http://localhost:8088
+4. Access the application:
+Open your browser and visit http://localhost:8088
 
-## Docker部署
+## Docker Deployment
 
-1. 使用Docker Compose启动应用：
+1. Start the application using Docker Compose:
 ```bash
 docker-compose up -d
 ```
 
-2. 查看日志：
+2. View logs:
 ```bash
 docker-compose logs -f
 ```
 
-3. 停止应用：
+3. Stop the application:
 ```bash
 docker-compose down
 ```
 
-### Docker注意事项
+### Docker Notes
 
-- 应用使用host网络模式运行，这对于Wake-on-LAN功能是必需的
-- 数据库文件存储在./data目录中
-- 容器自动重启（除非手动停止）
-- 使用gunicorn作为生产环境服务器
-- 默认端口：8088
+- Application runs in host network mode, which is required for Wake-on-LAN functionality
+- Database files are stored in the ./data directory
+- Container auto-restarts (unless manually stopped)
+- Uses gunicorn as the production server
+- Default port: 8088
 
-## 使用说明
+## Usage Guide
 
-1. 添加设备：
-   - 点击"添加设备"按钮
-   - 在弹出的表单中填写设备信息
-   - 点击"保存"按钮
+1. Add Device:
+   - Click the "Add Device" button
+   - Fill in the device information in the popup form
+   - Click "Save"
 
-2. 管理设备：
-   - 唤醒设备：点击设备卡片中的"唤醒"按钮
-   - 检查状态：点击"刷新状态"按钮
-   - 编辑信息：点击"编辑"按钮
-   - 删除设备：点击"删除"按钮（需要确认）
+2. Device Management:
+   - Wake Device: Click the "Wake Device" button on the device card
+   - Check Status: Click the "Update Status" button
+   - Edit Information: Click the "Edit Device" button
+   - Delete Device: Click the "Delete Item" button (confirmation required)
 
-## 注意事项
+## Important Notes
 
-- 确保目标设备已正确配置Wake-on-LAN功能
-- 确保在同一局域网内操作
-- MAC地址格式：XX:XX:XX:XX:XX:XX 或 XX-XX-XX-XX-XX-XX
-- IP地址必须是有效的IPv4地址
-- 广播地址会根据IP地址自动计算（默认子网掩码：255.255.255.0）。目前发送数据包的目标地址是ip，因此广播地址暂时没有用到。
+- Ensure target devices are properly configured for Wake-on-LAN
+- Make sure you're operating within the same local network
+- MAC address format: XX:XX:XX:XX:XX:XX or XX-XX-XX-XX-XX-XX
+- IP address must be a valid IPv4 address
+- Broadcast address is automatically calculated based on IP address (default subnet mask: 255.255.255.0). Currently, packets are sent to the IP address directly, so the broadcast address is not being used.
