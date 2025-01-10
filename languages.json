@@ -1,9 +1,9 @@
 {
   "zh": {
     "title": "Wake On LAN 管理器",
-    "add_device": "添加设备",
-    "export": "导出",
-    "import": "导入",
+    "add_device": "添加新设备",
+    "export": "导出JSON",
+    "import": "导入JSON",
     "device_name": "设备名称",
     "ip_address": "IP地址",
     "mac_address": "MAC地址",
@@ -33,13 +33,15 @@
     "export_failed": "导出失败",
     "import_success": "导入成功",
     "import_failed": "导入失败",
-    "invalid_file": "无效的文件格式"
+    "invalid_file": "无效的文件格式",
+    "online": "在线",
+    "offline": "离线"
   },
   "en": {
     "title": "Wake On LAN Manager",
-    "add_device": "Add Device",
-    "export": "Export",
-    "import": "Import",
+    "add_device": "Add New Device",
+    "export": "Export JSON",
+    "import": "Import JSON",
     "device_name": "Device Name",
     "ip_address": "IP Address",
     "mac_address": "MAC Address",
@@ -69,6 +71,8 @@
     "export_failed": "Export failed",
     "import_success": "Import successful",
     "import_failed": "Import failed",
-    "invalid_file": "Invalid file format"
+    "invalid_file": "Invalid file format",
+    "online": "Online",
+    "offline": "Offline"
   }
 }

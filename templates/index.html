@@ -7,79 +7,321 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
+        /* Title and header styling */
+        .page-title {
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-title h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Actions container responsive design */
+        .actions-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+
+        /* Top button group styling */
+        .actions-container .btn {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+        }
+
+        .actions-container .btn:hover {
+            background-color: #e0e0e0;
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        .actions-container .btn:active {
+            background-color: #d0d0d0;
+            color: #000;
+            transform: translateY(0);
+        }
+
+        /* Responsive breakpoints for action buttons */
+        @media (max-width: 1200px) {
+            .actions-container .btn {
+                flex: 0 0 calc(50% - 5px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .actions-container .btn {
+                flex: 0 0 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .actions-container .btn {
+                padding: 10px 15px;
+            }
+            .actions-container .btn i {
+                font-size: 1.1em;
+            }
+        }
+
+        /* Device cards container */
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 0 1rem;
+        }
+
+        /* Device card styling */
         .device-card {
-            transition: transform 0.2s;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background: white;
+            overflow: hidden;
         }
-        .device-card:hover {
-            transform: translateY(-5px);
+
+        .device-card .card-body {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 1.5rem;
         }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .device-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .device-info {
+            flex-grow: 1;
+            margin-bottom: 1.2rem;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .info-row:hover {
+            background: #e9ecef;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            font-weight: 500;
+            min-width: 120px;
+        }
+
+        .info-value {
+            color: #2c3e50;
+            font-family: monospace;
+            font-size: 0.95em;
+        }
+
         .status-badge {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f8f9fa;
+            color: #6c757d;
+            transition: all 0.3s ease;
         }
-        .status-online {
-            background-color: #28a745;
+
+        .status-badge.online {
+            background: #d4edda;
+            color: #155724;
         }
-        .status-offline {
-            background-color: #dc3545;
+
+        .status-badge.offline {
+            background: #f8d7da;
+            color: #721c24;
         }
-        .language-switcher {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+
+        .status-badge i {
+            font-size: 0.8em;
         }
-        .language-switcher img {
+
+        .device-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .device-actions .btn {
+            padding: 10px;
+            font-size: 0.95em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .device-actions .btn i {
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 576px) {
+            .device-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Modal responsiveness */
+        @media (max-width: 576px) {
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+        }
+
+        /* Language modal styling */
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .language-option img {
             width: 32px;
             height: 32px;
-            margin: 0 5px;
-            cursor: pointer;
             border-radius: 4px;
-            transition: transform 0.2s;
         }
-        .language-switcher img:hover {
-            transform: scale(1.1);
+
+        .language-option.active {
+            background-color: #e3f2fd;
         }
-        .language-switcher img.active {
-            box-shadow: 0 0 0 2px #007bff;
+
+        .language-name {
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        /* Button group styling */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .btn-group .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-group .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-group .btn i {
+            font-size: 1.1em;
         }
     </style>
 </head>
 <body>
-    <div class="language-switcher">
-        <img src="https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/cn.svg" 
-             alt="中文" 
-             onclick="changeLanguage('zh')" 
-             class="lang-flag {{ 'active' if lang == 'zh' else '' }}"
-             data-lang="zh">
-        <img src="https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/gb.svg" 
-             alt="English" 
-             onclick="changeLanguage('en')" 
-             class="lang-flag {{ 'active' if lang == 'en' else '' }}"
-             data-lang="en">
-    </div>
-    <div class="container py-4">
-        <div class="mb-3">
+    <div class="page-title">
+        <div class="container">
             <h1>{{ language.title }}</h1>
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="showAddDeviceModal()">
-                    <i class="bi bi-plus-lg"></i> {{ language.add_device }}
-                </button>
-                <button class="btn btn-success" onclick="exportDevices()">
-                    <i class="bi bi-download"></i> {{ language.export }}
-                </button>
-                <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
-                    <i class="bi bi-upload"></i> {{ language.import }}
-                </button>
-                <input type="file" id="importFile" style="display:none" accept=".json" onchange="importDevices()">
-            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="actions-container">
+            <button class="btn btn-primary" onclick="showAddDeviceModal()">
+                <i class="bi bi-plus-lg"></i>
+                <span class="btn-text">{{ language.add_device }}</span>
+            </button>
+            <button class="btn btn-success" onclick="exportDevices()">
+                <i class="bi bi-download"></i>
+                <span class="btn-text">{{ language.export }}</span>
+            </button>
+            <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
+                <i class="bi bi-upload"></i>
+                <span class="btn-text">{{ language.import }}</span>
+            </button>
+            <button class="btn btn-info" onclick="showLanguageModal()">
+                <i class="bi bi-globe"></i>
+                <span class="btn-text">{{ "Change Language" if lang == "en" else "切换语言" }}</span>
+            </button>
+            <input type="file" id="importFile" style="display:none" accept=".json" onchange="importDevices()">
         </div>
 
-        <div class="row" id="devices-container">
+        <div class="devices-grid" id="devices-container">
             <!-- 设备卡片将通过JavaScript动态添加 -->
+        </div>
+    </div>
+
+    <!-- Language Selection Modal -->
+    <div class="modal fade" id="languageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ "Select Language" if lang == "en" else "选择语言" }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="language-option {{ 'active' if lang == 'en' else '' }}" onclick="changeLanguage('en')">
+                        <img src="https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/gb.svg" alt="English">
+                        <span class="language-name">English</span>
+                    </div>
+                    <div class="language-option {{ 'active' if lang == 'zh' else '' }}" onclick="changeLanguage('zh')">
+                        <img src="https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/cn.svg" alt="中文">
+                        <span class="language-name">中文</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -172,7 +414,7 @@
         const currentLang = "{{ lang }}";
 
         // 模态框实例
-        let addModal, editModal;
+        let addModal, editModal, languageModal;
 
         // 当前正在编辑的设备ID
         let currentEditingId;
@@ -180,6 +422,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             addModal = new bootstrap.Modal(document.getElementById('addDeviceModal'));
             editModal = new bootstrap.Modal(document.getElementById('editDeviceModal'));
+            languageModal = new bootstrap.Modal(document.getElementById('languageModal'));
             loadDevices();
             // 每30秒刷新一次设备状态
             setInterval(updateAllDevicesStatus, 30000);
@@ -220,33 +463,43 @@
             
             devices.forEach(device => {
                 const card = document.createElement('div');
-                card.className = 'col-md-4 mb-4';
+                card.className = 'device-card';
                 card.innerHTML = `
-                    <div class="card device-card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5 class="card-title mb-0">${device.name}</h5>
-                                <span class="status-badge" id="status-${device.id}" title="${currentLanguage.checking}"></span>
+                    <div class="card-body">
+                        <div class="device-header">
+                            <h5 class="device-name">${device.name}</h5>
+                            <span class="status-badge" id="status-${device.id}" title="${currentLanguage.checking}">
+                                <i class="bi bi-circle-fill"></i>
+                                <span class="status-text">${currentLanguage.checking}</span>
+                            </span>
+                        </div>
+                        <div class="device-info">
+                            <div class="info-row">
+                                <span class="info-label">${currentLanguage.ip_address}</span>
+                                <span class="info-value">${device.ip}</span>
                             </div>
-                            <p class="card-text">
-                                ${currentLanguage.ip_address}: ${device.ip}<br>
-                                ${currentLanguage.mac_address}: ${device.mac}<br>
-                                ${currentLanguage.broadcast_address}: ${device.broadcast}
-                            </p>
-                            <div class="btn-group">
-                                <button class="btn btn-primary btn-sm" data-id="${device.id}" onclick="wakeDevice(${device.id})">
-                                    ${currentLanguage.wake}
-                                </button>
-                                <button class="btn btn-info btn-sm" data-id="${device.id}" onclick="checkStatus(${device.id})">
-                                    ${currentLanguage.status}
-                                </button>
-                                <button class="btn btn-warning btn-sm" data-device='${JSON.stringify(device)}' onclick="showEditDeviceModal(this.dataset.device)">
-                                    ${currentLanguage.edit_device}
-                                </button>
-                                <button class="btn btn-danger btn-sm" data-id="${device.id}" onclick="deleteDevice(${device.id})">
-                                    ${currentLanguage.delete}
-                                </button>
+                            <div class="info-row">
+                                <span class="info-label">${currentLanguage.mac_address}</span>
+                                <span class="info-value">${device.mac}</span>
                             </div>
+                            <div class="info-row">
+                                <span class="info-label">${currentLanguage.broadcast_address}</span>
+                                <span class="info-value">${device.broadcast}</span>
+                            </div>
+                        </div>
+                        <div class="device-actions">
+                            <button class="btn btn-primary" onclick="wakeDevice(${device.id})">
+                                <i class="bi bi-power"></i> ${currentLanguage.wake}
+                            </button>
+                            <button class="btn btn-info" onclick="checkStatus(${device.id})">
+                                <i class="bi bi-arrow-repeat"></i> ${currentLanguage.status}
+                            </button>
+                            <button class="btn btn-warning" onclick="showEditDeviceModal(${JSON.stringify(device)})">
+                                <i class="bi bi-pencil"></i> ${currentLanguage.edit_device}
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteDevice(${device.id})">
+                                <i class="bi bi-trash"></i> ${currentLanguage.delete}
+                            </button>
                         </div>
                     </div>
                 `;
@@ -388,11 +641,15 @@
             });
         }
 
-        function updateDeviceStatus(id, online) {
-            const badge = document.getElementById(`status-${id}`);
-            if (badge) {
-                badge.className = `status-badge ${online ? 'status-online' : 'status-offline'}`;
-                badge.title = online ? 'Online' : 'Offline';
+        function updateDeviceStatus(deviceId, isOnline) {
+            const statusBadge = document.getElementById(`status-${deviceId}`);
+            if (statusBadge) {
+                statusBadge.className = 'status-badge ' + (isOnline ? 'online' : 'offline');
+                statusBadge.innerHTML = `
+                    <i class="bi bi-circle-fill"></i>
+                    <span class="status-text">${isOnline ? currentLanguage.online : currentLanguage.offline}</span>
+                `;
+                statusBadge.title = isOnline ? currentLanguage.online : currentLanguage.offline;
             }
         }
 
@@ -466,56 +723,12 @@
             fileInput.value = '';
         }
 
-        function showEditDeviceModal(deviceJson) {
-            const device = typeof deviceJson === 'string' ? JSON.parse(deviceJson) : deviceJson;
-            currentEditingId = device.id;
-            const form = document.getElementById('editDeviceForm');
-            form.elements['name'].value = device.name;
-            form.elements['ip'].value = device.ip;
-            form.elements['mac'].value = device.mac;
-            form.elements['broadcast'].value = device.broadcast;
-            const editModal = new bootstrap.Modal(document.getElementById('editDeviceModal'));
-            editModal.show();
-        }
-
-        async function updateDevice() {
-            const form = document.getElementById('editDeviceForm');
-            const formData = {
-                name: form.elements['name'].value,
-                ip: form.elements['ip'].value,
-                mac: form.elements['mac'].value,
-                broadcast: form.elements['broadcast'].value
-            };
-
-            try {
-                const response = await fetch(`/api/devices/${currentEditingId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    const editModal = bootstrap.Modal.getInstance(document.getElementById('editDeviceModal'));
-                    editModal.hide();
-                    showSuccess(currentLanguage.device_updated);
-                    loadDevices();
-                } else {
-                    throw new Error(currentLanguage.device_update_failed);
-                }
-            } catch (error) {
-                showError(error.message);
-            }
+        function showLanguageModal() {
+            languageModal.show();
         }
 
         function changeLanguage(lang) {
-            // 更新所有国旗图标的active状态
-            document.querySelectorAll('.lang-flag').forEach(flag => {
-                flag.classList.toggle('active', flag.dataset.lang === lang);
-            });
-            // 重定向到选择的语言版本
-            window.location.href = `/${lang}/`;
+            window.location.href = '/' + lang + '/';
         }
     </script>
 </body>
