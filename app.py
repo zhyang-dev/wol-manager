@@ -19,15 +19,17 @@ class Device(db.Model):
     broadcast = db.Column(db.String(15), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def to_dict(self):
-        return {
+    def to_dict(self, include_created_at=True):
+        data = {
             'id': self.id,
             'name': self.name,
             'ip': self.ip,
             'mac': self.mac,
-            'broadcast': self.broadcast,
-            'created_at': self.created_at.isoformat()
+            'broadcast': self.broadcast
         }
+        if include_created_at:
+            data['created_at'] = self.created_at.isoformat()
+        return data
 
 def calculate_broadcast(ip):
     """计算广播地址（假设子网掩码为255.255.255.0）"""
@@ -134,6 +136,77 @@ def device_status(device_id):
     device = Device.query.get_or_404(device_id)
     status = check_device_status(device.ip)
     return jsonify({'online': status})
+
+def validate_device_json(data):
+    """验证导入的JSON数据结构"""
+    required_fields = ['name', 'ip', 'mac', 'broadcast']
+    if not isinstance(data, list):
+        return False, "JSON数据应该是一个数组"
+    
+    for device in data:
+        if not all(field in device for field in required_fields):
+            return False, f"每个设备必须包含以下字段: {', '.join(required_fields)}"
+        
+        # 验证MAC地址格式
+        if len(device['mac'].replace(':', '').replace('-', '')) != 12:
+            return False, "MAC地址格式不正确"
+        
+        # 验证IP地址格式
+        try:
+            ipaddress.IPv4Address(device['ip'])
+        except ipaddress.AddressValueError:
+            return False, "IP地址格式不正确"
+    
+    return True, None
+
+@app.route('/api/devices/export', methods=['GET'])
+def export_devices():
+    devices = Device.query.all()
+    devices_data = [device.to_dict(include_created_at=False) for device in devices]
+    response = jsonify(devices_data)
+    response.headers['Content-Disposition'] = 'attachment; filename=devices_export.json'
+    return response
+
+@app.route('/api/devices/import', methods=['POST'])
+def import_devices():
+    if 'file' not in request.files:
+        return jsonify({'error': '未提供文件'}), 400
+    
+    file = request.files['file']
+    try:
+        data = json.load(file)
+    except json.JSONDecodeError:
+        return jsonify({'error': '文件不是有效的JSON格式'}), 400
+    
+    # 验证JSON结构
+    is_valid, error_message = validate_device_json(data)
+    if not is_valid:
+        return jsonify({'error': error_message}), 400
+    
+    # 处理导入
+    imported_count = 0
+    for device_data in data:
+        # 检查是否已存在相同IP和MAC的设备
+        existing_device = Device.query.filter_by(
+            ip=device_data['ip'],
+            mac=device_data['mac']
+        ).first()
+        
+        if not existing_device:
+            new_device = Device(
+                name=device_data['name'],
+                ip=device_data['ip'],
+                mac=device_data['mac'],
+                broadcast=device_data['broadcast']
+            )
+            db.session.add(new_device)
+            imported_count += 1
+    
+    db.session.commit()
+    return jsonify({
+        'message': f'成功导入{imported_count}个设备',
+        'imported_count': imported_count
+    })
 
 if __name__ == '__main__':
     with app.app_context():

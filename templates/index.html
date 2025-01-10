@@ -32,9 +32,18 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Wake On LAN 管理器</h1>
-            <button class="btn btn-primary" onclick="showAddDeviceModal()">
-                <i class="bi bi-plus-lg"></i> 添加设备
-            </button>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="showAddDeviceModal()">
+                    <i class="bi bi-plus-lg"></i> 添加设备
+                </button>
+                <button class="btn btn-success" onclick="exportDevices()">
+                    <i class="bi bi-download"></i> 导出
+                </button>
+                <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
+                    <i class="bi bi-upload"></i> 导入
+                </button>
+                <input type="file" id="importFile" style="display:none" accept=".json" onchange="importDevices()">
+            </div>
         </div>
 
         <div class="row" id="devices-container">
@@ -357,6 +366,56 @@
                 text: message,
                 icon: 'error'
             });
+        }
+
+        async function exportDevices() {
+            try {
+                const response = await fetch('/api/devices/export');
+                if (!response.ok) throw new Error('导出失败');
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'devices_export.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showSuccess('导出成功');
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function importDevices() {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files.length) return;
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/api/devices/import', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || '导入失败');
+                }
+                
+                const result = await response.json();
+                showSuccess(result.message);
+                loadDevices();
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                fileInput.value = ''; // 清空文件选择
+            }
         }
 
         function editDevice(id, name, ip, mac, broadcast) {
