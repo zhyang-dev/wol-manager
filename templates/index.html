@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wake On LAN 管理器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        .device-card {
+            transition: transform 0.2s;
+        }
+        .device-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-badge {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .status-online {
+            background-color: #28a745;
+        }
+        .status-offline {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Wake On LAN 管理器</h1>
+            <button class="btn btn-primary" onclick="showAddDeviceModal()">
+                <i class="bi bi-plus-lg"></i> 添加设备
+            </button>
+        </div>
+
+        <div class="row" id="devices-container">
+            <!-- 设备卡片将通过JavaScript动态添加 -->
+        </div>
+    </div>
+
+    <!-- 添加设备模态框 -->
+    <div class="modal fade" id="addDeviceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加新设备</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDeviceForm">
+                        <div class="mb-3">
+                            <label class="form-label">设备名称</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">IP地址</label>
+                            <input type="text" class="form-control" name="ip" required 
+                                   pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">MAC地址</label>
+                            <input type="text" class="form-control" name="mac" required 
+                                   pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">广播地址</label>
+                            <input type="text" class="form-control" name="broadcast" 
+                                   pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                                   placeholder="留空将自动计算">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="addDevice()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑设备模态框 -->
+    <div class="modal fade" id="editDeviceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑设备</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDeviceForm">
+                        <input type="hidden" name="id">
+                        <div class="mb-3">
+                            <label class="form-label">设备名称</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">IP地址</label>
+                            <input type="text" class="form-control" name="ip" required 
+                                   pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">MAC地址</label>
+                            <input type="text" class="form-control" name="mac" required 
+                                   pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">广播地址</label>
+                            <input type="text" class="form-control" name="broadcast"
+                                   pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                                   placeholder="留空将自动计算">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="updateDevice()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+    <script>
+        // 模态框实例
+        let addModal, editModal;
+
+        // 当前正在编辑的设备ID
+        let currentEditingId;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            addModal = new bootstrap.Modal(document.getElementById('addDeviceModal'));
+            editModal = new bootstrap.Modal(document.getElementById('editDeviceModal'));
+            loadDevices();
+            // 每30秒刷新一次设备状态
+            setInterval(updateAllDevicesStatus, 30000);
+        });
+
+        function showAddDeviceModal() {
+            document.getElementById('addDeviceForm').reset();
+            addModal.show();
+        }
+
+        function showEditDeviceModal(device) {
+            currentEditingId = device.id;
+            const form = document.getElementById('editDeviceForm');
+            form.elements['name'].value = device.name;
+            form.elements['ip'].value = device.ip;
+            form.elements['mac'].value = device.mac;
+            form.elements['broadcast'].value = device.broadcast;
+            editModal.show();
+        }
+
+        async function loadDevices() {
+            try {
+                const response = await fetch('/api/devices');
+                const devices = await response.json();
+                displayDevices(devices);
+                updateAllDevicesStatus();
+            } catch (error) {
+                showError('加载设备列表失败');
+            }
+        }
+
+        function displayDevices(devices) {
+            const container = document.getElementById('devices-container');
+            container.innerHTML = '';
+            
+            devices.forEach(device => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-4';
+                col.innerHTML = `
+                    <div class="card device-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">${device.name}</h5>
+                                <div>
+                                    <span class="status-badge" id="status-${device.id}"></span>
+                                    <span id="status-text-${device.id}">检查中...</span>
+                                </div>
+                            </div>
+                            <p class="card-text">IP: ${device.ip}</p>
+                            <p class="card-text">MAC: ${device.mac}</p>
+                            <p class="card-text">广播地址: ${device.broadcast}</p>
+                            <div class="btn-group w-100">
+                                <button class="btn btn-primary" onclick="wakeDevice(${device.id})">唤醒</button>
+                                <button class="btn btn-info" onclick="checkStatus(${device.id})">刷新状态</button>
+                                <button class="btn btn-warning" onclick="editDevice(${device.id}, '${device.name}', '${device.ip}', '${device.mac}', '${device.broadcast}')">编辑</button>
+                                <button class="btn btn-danger" onclick="deleteDevice(${device.id})">删除</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+        }
+
+        async function addDevice() {
+            const form = document.getElementById('addDeviceForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = {
+                name: form.elements['name'].value,
+                ip: form.elements['ip'].value,
+                mac: form.elements['mac'].value,
+                broadcast: form.elements['broadcast'].value
+            };
+
+            try {
+                const response = await fetch('/api/devices', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    addModal.hide();
+                    showSuccess('设备添加成功');
+                    loadDevices();
+                } else {
+                    throw new Error('添加设备失败');
+                }
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function updateDevice() {
+            const form = document.getElementById('editDeviceForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = {
+                name: form.elements['name'].value,
+                ip: form.elements['ip'].value,
+                mac: form.elements['mac'].value,
+                broadcast: form.elements['broadcast'].value
+            };
+
+            try {
+                const response = await fetch(`/api/devices/${currentEditingId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    editModal.hide();
+                    showSuccess('设备更新成功');
+                    loadDevices();
+                } else {
+                    throw new Error('更新设备失败');
+                }
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function deleteDevice(id) {
+            const result = await Swal.fire({
+                title: '确认删除',
+                text: '确定要删除这个设备吗？',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '确定删除',
+                cancelButtonText: '取消'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/api/devices/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showSuccess('设备已删除');
+                        loadDevices();
+                    } else {
+                        throw new Error('删除设备失败');
+                    }
+                } catch (error) {
+                    showError(error.message);
+                }
+            }
+        }
+
+        async function wakeDevice(id) {
+            try {
+                const response = await fetch(`/api/devices/${id}/wake`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccess('唤醒信号已发送');
+                    setTimeout(() => checkStatus(id), 5000); // 5秒后检查状态
+                } else {
+                    throw new Error('发送唤醒信号失败');
+                }
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function checkStatus(id) {
+            try {
+                const response = await fetch(`/api/devices/${id}/status`);
+                const result = await response.json();
+                updateDeviceStatus(id, result.online);
+            } catch (error) {
+                showError('检查设备状态失败');
+            }
+        }
+
+        async function updateAllDevicesStatus() {
+            const devices = document.querySelectorAll('.device-card');
+            devices.forEach(async (device) => {
+                const id = device.querySelector('.btn-primary').getAttribute('onclick').match(/\d+/)[0];
+                await checkStatus(id);
+            });
+        }
+
+        function updateDeviceStatus(id, online) {
+            const badge = document.getElementById(`status-${id}`);
+            const text = document.getElementById(`status-text-${id}`);
+            
+            badge.className = `status-badge ${online ? 'status-online' : 'status-offline'}`;
+            text.textContent = online ? '在线' : '离线';
+        }
+
+        function showSuccess(message) {
+            Swal.fire({
+                title: '成功',
+                text: message,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        function showError(message) {
+            Swal.fire({
+                title: '错误',
+                text: message,
+                icon: 'error'
+            });
+        }
+
+        function editDevice(id, name, ip, mac, broadcast) {
+            currentEditingId = id;
+            const form = document.getElementById('editDeviceForm');
+            form.elements['name'].value = name;
+            form.elements['ip'].value = ip;
+            form.elements['mac'].value = mac;
+            form.elements['broadcast'].value = broadcast;
+            editModal.show();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    network_mode: "host"  # 使用主机网络模式，这对于Wake-on-LAN功能是必需的
+    cap_add:
+      - NET_ADMIN  # 添加网络管理权限，用于发送Wake-on-LAN包
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+      - SQLALCHEMY_DATABASE_URI=sqlite:///data/devices.db
