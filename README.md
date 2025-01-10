@@ -1,4 +1,5 @@
-# Wake On LAN 管理器 (Flask版本)
+# Wake On LAN 管理器 
+[中文版本](README_zh.md)
 
 这是一个基于Flask的Web应用程序，用于管理和监控局域网内支持Wake-on-LAN功能的设备。
 
@@ -85,4 +86,4 @@ docker-compose down
 - 确保在同一局域网内操作
 - MAC地址格式：XX:XX:XX:XX:XX:XX 或 XX-XX-XX-XX-XX-XX
 - IP地址必须是有效的IPv4地址
-- 广播地址会根据IP地址自动计算（默认子网掩码：255.255.255.0）
+- 广播地址会根据IP地址自动计算（默认子网掩码：255.255.255.0）。目前发送数据包的目标地址是ip，因此广播地址暂时没有用到。

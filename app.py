@@ -76,9 +76,18 @@ def check_device_status(ip):
         return False
 
 @app.route('/')
-def index():
+def redirect_to_default_language():
+    return redirect('/zh/')
+
+@app.route('/<lang>/')
+def index(lang='zh'):
+    with open('languages.json', 'r', encoding='utf-8') as f:
+        languages = json.load(f)
     devices = Device.query.all()
-    return render_template('index.html', devices=devices)
+    # 确保lang是有效的语言代码
+    if lang not in languages:
+        return redirect('/zh/')
+    return render_template('index.html', devices=devices, language=languages[lang], lang=lang)
 
 @app.route('/api/devices', methods=['GET'])
 def get_devices():

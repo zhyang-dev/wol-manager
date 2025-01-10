@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wake On LAN 管理器</title>
+    <title>{{ language.title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
@@ -26,21 +26,53 @@
         .status-offline {
             background-color: #dc3545;
         }
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .language-switcher img {
+            width: 32px;
+            height: 32px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
+        .language-switcher img:hover {
+            transform: scale(1.1);
+        }
+        .language-switcher img.active {
+            box-shadow: 0 0 0 2px #007bff;
+        }
     </style>
 </head>
 <body>
+    <div class="language-switcher">
+        <img src="https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/cn.svg" 
+             alt="中文" 
+             onclick="changeLanguage('zh')" 
+             class="lang-flag {{ 'active' if lang == 'zh' else '' }}"
+             data-lang="zh">
+        <img src="https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/gb.svg" 
+             alt="English" 
+             onclick="changeLanguage('en')" 
+             class="lang-flag {{ 'active' if lang == 'en' else '' }}"
+             data-lang="en">
+    </div>
     <div class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Wake On LAN 管理器</h1>
+        <div class="mb-3">
+            <h1>{{ language.title }}</h1>
             <div class="btn-group">
                 <button class="btn btn-primary" onclick="showAddDeviceModal()">
-                    <i class="bi bi-plus-lg"></i> 添加设备
+                    <i class="bi bi-plus-lg"></i> {{ language.add_device }}
                 </button>
                 <button class="btn btn-success" onclick="exportDevices()">
-                    <i class="bi bi-download"></i> 导出
+                    <i class="bi bi-download"></i> {{ language.export }}
                 </button>
                 <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
-                    <i class="bi bi-upload"></i> 导入
+                    <i class="bi bi-upload"></i> {{ language.import }}
                 </button>
                 <input type="file" id="importFile" style="display:none" accept=".json" onchange="importDevices()">
             </div>
@@ -56,36 +88,36 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">添加新设备</h5>
+                    <h5 class="modal-title">{{ language.add_device }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addDeviceForm">
                         <div class="mb-3">
-                            <label class="form-label">设备名称</label>
+                            <label class="form-label">{{ language.device_name }}</label>
                             <input type="text" class="form-control" name="name" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">IP地址</label>
+                            <label class="form-label">{{ language.ip_address }}</label>
                             <input type="text" class="form-control" name="ip" required 
                                    pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">MAC地址</label>
+                            <label class="form-label">{{ language.mac_address }}</label>
                             <input type="text" class="form-control" name="mac" required 
                                    pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">广播地址</label>
+                            <label class="form-label">{{ language.broadcast_address }}</label>
                             <input type="text" class="form-control" name="broadcast" 
                                    pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-                                   placeholder="留空将自动计算">
+                                   placeholder="{{ language.auto_calculate }}">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" onclick="addDevice()">保存</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ language.cancel }}</button>
+                    <button type="button" class="btn btn-primary" onclick="addDevice()">{{ language.save }}</button>
                 </div>
             </div>
         </div>
@@ -96,37 +128,37 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">编辑设备</h5>
+                    <h5 class="modal-title">{{ language.edit_device }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editDeviceForm">
                         <input type="hidden" name="id">
                         <div class="mb-3">
-                            <label class="form-label">设备名称</label>
+                            <label class="form-label">{{ language.device_name }}</label>
                             <input type="text" class="form-control" name="name" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">IP地址</label>
+                            <label class="form-label">{{ language.ip_address }}</label>
                             <input type="text" class="form-control" name="ip" required 
                                    pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">MAC地址</label>
+                            <label class="form-label">{{ language.mac_address }}</label>
                             <input type="text" class="form-control" name="mac" required 
                                    pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">广播地址</label>
+                            <label class="form-label">{{ language.broadcast_address }}</label>
                             <input type="text" class="form-control" name="broadcast"
                                    pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-                                   placeholder="留空将自动计算">
+                                   placeholder="{{ language.auto_calculate }}">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" onclick="updateDevice()">保存</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ language.cancel }}</button>
+                    <button type="button" class="btn btn-primary" onclick="updateDevice()">{{ language.save }}</button>
                 </div>
             </div>
         </div>
@@ -135,6 +167,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
     <script>
+        // 在全局作用域存储语言数据
+        const currentLanguage = {{ language|tojson|safe }};
+        const currentLang = "{{ lang }}";
+
         // 模态框实例
         let addModal, editModal;
 
@@ -169,7 +205,10 @@
                 const response = await fetch('/api/devices');
                 const devices = await response.json();
                 displayDevices(devices);
-                updateAllDevicesStatus();
+                // 设备显示后，检查所有设备的状态
+                devices.forEach(device => {
+                    checkStatus(device.id);
+                });
             } catch (error) {
                 showError('加载设备列表失败');
             }
@@ -180,31 +219,38 @@
             container.innerHTML = '';
             
             devices.forEach(device => {
-                const col = document.createElement('div');
-                col.className = 'col-md-4 mb-4';
-                col.innerHTML = `
-                    <div class="card device-card h-100">
+                const card = document.createElement('div');
+                card.className = 'col-md-4 mb-4';
+                card.innerHTML = `
+                    <div class="card device-card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h5 class="card-title mb-0">${device.name}</h5>
-                                <div>
-                                    <span class="status-badge" id="status-${device.id}"></span>
-                                    <span id="status-text-${device.id}">检查中...</span>
-                                </div>
+                                <span class="status-badge" id="status-${device.id}" title="${currentLanguage.checking}"></span>
                             </div>
-                            <p class="card-text">IP: ${device.ip}</p>
-                            <p class="card-text">MAC: ${device.mac}</p>
-                            <p class="card-text">广播地址: ${device.broadcast}</p>
-                            <div class="btn-group w-100">
-                                <button class="btn btn-primary" onclick="wakeDevice(${device.id})">唤醒</button>
-                                <button class="btn btn-info" onclick="checkStatus(${device.id})">刷新状态</button>
-                                <button class="btn btn-warning" onclick="editDevice(${device.id}, '${device.name}', '${device.ip}', '${device.mac}', '${device.broadcast}')">编辑</button>
-                                <button class="btn btn-danger" onclick="deleteDevice(${device.id})">删除</button>
+                            <p class="card-text">
+                                ${currentLanguage.ip_address}: ${device.ip}<br>
+                                ${currentLanguage.mac_address}: ${device.mac}<br>
+                                ${currentLanguage.broadcast_address}: ${device.broadcast}
+                            </p>
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-sm" data-id="${device.id}" onclick="wakeDevice(${device.id})">
+                                    ${currentLanguage.wake}
+                                </button>
+                                <button class="btn btn-info btn-sm" data-id="${device.id}" onclick="checkStatus(${device.id})">
+                                    ${currentLanguage.status}
+                                </button>
+                                <button class="btn btn-warning btn-sm" data-device='${JSON.stringify(device)}' onclick="showEditDeviceModal(this.dataset.device)">
+                                    ${currentLanguage.edit_device}
+                                </button>
+                                <button class="btn btn-danger btn-sm" data-id="${device.id}" onclick="deleteDevice(${device.id})">
+                                    ${currentLanguage.delete}
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
-                container.appendChild(col);
+                container.appendChild(card);
             });
         }
 
@@ -233,10 +279,10 @@
 
                 if (response.ok) {
                     addModal.hide();
-                    showSuccess('设备添加成功');
+                    showSuccess(currentLanguage.device_added);
                     loadDevices();
                 } else {
-                    throw new Error('添加设备失败');
+                    throw new Error(currentLanguage.device_add_failed);
                 }
             } catch (error) {
                 showError(error.message);
@@ -268,10 +314,10 @@
 
                 if (response.ok) {
                     editModal.hide();
-                    showSuccess('设备更新成功');
+                    showSuccess(currentLanguage.device_updated);
                     loadDevices();
                 } else {
-                    throw new Error('更新设备失败');
+                    throw new Error(currentLanguage.device_update_failed);
                 }
             } catch (error) {
                 showError(error.message);
@@ -280,12 +326,12 @@
 
         async function deleteDevice(id) {
             const result = await Swal.fire({
-                title: '确认删除',
-                text: '确定要删除这个设备吗？',
+                title: currentLanguage.confirm_delete,
+                text: currentLanguage.confirm_delete_message,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '确定删除',
-                cancelButtonText: '取消'
+                confirmButtonText: currentLanguage.confirm_delete_button,
+                cancelButtonText: currentLanguage.cancel
             });
 
             if (result.isConfirmed) {
@@ -295,10 +341,10 @@
                     });
 
                     if (response.ok) {
-                        showSuccess('设备已删除');
+                        showSuccess(currentLanguage.device_deleted);
                         loadDevices();
                     } else {
-                        throw new Error('删除设备失败');
+                        throw new Error(currentLanguage.device_delete_failed);
                     }
                 } catch (error) {
                     showError(error.message);
@@ -314,10 +360,10 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    showSuccess('唤醒信号已发送');
+                    showSuccess(currentLanguage.wake_signal_sent);
                     setTimeout(() => checkStatus(id), 5000); // 5秒后检查状态
                 } else {
-                    throw new Error('发送唤醒信号失败');
+                    throw new Error(currentLanguage.wake_signal_failed);
                 }
             } catch (error) {
                 showError(error.message);
@@ -330,7 +376,7 @@
                 const result = await response.json();
                 updateDeviceStatus(id, result.online);
             } catch (error) {
-                showError('检查设备状态失败');
+                showError(currentLanguage.status_check_failed);
             }
         }
 
@@ -344,15 +390,15 @@
 
         function updateDeviceStatus(id, online) {
             const badge = document.getElementById(`status-${id}`);
-            const text = document.getElementById(`status-text-${id}`);
-            
-            badge.className = `status-badge ${online ? 'status-online' : 'status-offline'}`;
-            text.textContent = online ? '在线' : '离线';
+            if (badge) {
+                badge.className = `status-badge ${online ? 'status-online' : 'status-offline'}`;
+                badge.title = online ? 'Online' : 'Offline';
+            }
         }
 
         function showSuccess(message) {
             Swal.fire({
-                title: '成功',
+                title: currentLanguage.success,
                 text: message,
                 icon: 'success',
                 timer: 2000,
@@ -362,7 +408,7 @@
 
         function showError(message) {
             Swal.fire({
-                title: '错误',
+                title: currentLanguage.error,
                 text: message,
                 icon: 'error'
             });
@@ -371,22 +417,24 @@
         async function exportDevices() {
             try {
                 const response = await fetch('/api/devices/export');
-                if (!response.ok) throw new Error('导出失败');
-                
+                if (!response.ok) {
+                    throw new Error(currentLanguage.export_failed);
+                }
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
+
                 // 从响应头中获取文件名
                 const contentDisposition = response.headers.get('Content-Disposition');
                 const filename = contentDisposition ? contentDisposition.split('filename=')[1].replace(/"/g, '') : 'devices_export.json';
                 a.download = filename;
+                
                 document.body.appendChild(a);
                 a.click();
-                document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
-                
-                showSuccess('导出成功');
+                document.body.removeChild(a);
+                showSuccess(currentLanguage.export_success);
             } catch (error) {
                 showError(error.message);
             }
@@ -394,41 +442,80 @@
 
         async function importDevices() {
             const fileInput = document.getElementById('importFile');
-            if (!fileInput.files.length) return;
-            
             const file = fileInput.files[0];
+            if (!file) return;
+
             const formData = new FormData();
             formData.append('file', file);
-            
+
             try {
                 const response = await fetch('/api/devices/import', {
                     method: 'POST',
                     body: formData
                 });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || '导入失败');
+
+                if (response.ok) {
+                    showSuccess(currentLanguage.import_success);
+                    loadDevices();
+                } else {
+                    throw new Error(currentLanguage.import_failed);
                 }
-                
-                const result = await response.json();
-                showSuccess(result.message);
-                loadDevices();
             } catch (error) {
                 showError(error.message);
-            } finally {
-                fileInput.value = ''; // 清空文件选择
+            }
+            fileInput.value = '';
+        }
+
+        function showEditDeviceModal(deviceJson) {
+            const device = typeof deviceJson === 'string' ? JSON.parse(deviceJson) : deviceJson;
+            currentEditingId = device.id;
+            const form = document.getElementById('editDeviceForm');
+            form.elements['name'].value = device.name;
+            form.elements['ip'].value = device.ip;
+            form.elements['mac'].value = device.mac;
+            form.elements['broadcast'].value = device.broadcast;
+            const editModal = new bootstrap.Modal(document.getElementById('editDeviceModal'));
+            editModal.show();
+        }
+
+        async function updateDevice() {
+            const form = document.getElementById('editDeviceForm');
+            const formData = {
+                name: form.elements['name'].value,
+                ip: form.elements['ip'].value,
+                mac: form.elements['mac'].value,
+                broadcast: form.elements['broadcast'].value
+            };
+
+            try {
+                const response = await fetch(`/api/devices/${currentEditingId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const editModal = bootstrap.Modal.getInstance(document.getElementById('editDeviceModal'));
+                    editModal.hide();
+                    showSuccess(currentLanguage.device_updated);
+                    loadDevices();
+                } else {
+                    throw new Error(currentLanguage.device_update_failed);
+                }
+            } catch (error) {
+                showError(error.message);
             }
         }
 
-        function editDevice(id, name, ip, mac, broadcast) {
-            currentEditingId = id;
-            const form = document.getElementById('editDeviceForm');
-            form.elements['name'].value = name;
-            form.elements['ip'].value = ip;
-            form.elements['mac'].value = mac;
-            form.elements['broadcast'].value = broadcast;
-            editModal.show();
+        function changeLanguage(lang) {
+            // 更新所有国旗图标的active状态
+            document.querySelectorAll('.lang-flag').forEach(flag => {
+                flag.classList.toggle('active', flag.dataset.lang === lang);
+            });
+            // 重定向到选择的语言版本
+            window.location.href = `/${lang}/`;
         }
     </script>
 </body>
