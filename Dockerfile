@@ -8,7 +8,8 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     FLASK_APP=app.py \
-    FLASK_ENV=production
+    FLASK_ENV=production \
+    PORT=8088
 
 # 安装系统依赖
 RUN apt-get update \
@@ -33,7 +34,7 @@ USER appuser
 VOLUME ["/app/data"]
 
 # 暴露端口
-EXPOSE 5000
+EXPOSE ${PORT}
 
 # 启动命令
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT} --workers 4 app:app"]

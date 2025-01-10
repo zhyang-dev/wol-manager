@@ -39,7 +39,7 @@ python app.py
 ```
 
 4. 访问应用：
-打开浏览器访问 http://localhost:5000
+打开浏览器访问 http://localhost:8088
 
 ## Docker部署
 
@@ -64,7 +64,7 @@ docker-compose down
 - 数据库文件存储在./data目录中
 - 容器自动重启（除非手动停止）
 - 使用gunicorn作为生产环境服务器
-- 默认端口：5000
+- 默认端口：8088
 
 ## 使用说明
 

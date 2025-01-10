@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "8088:8088"
     volumes:
       - ./data:/app/data
     restart: unless-stopped
@@ -15,3 +15,4 @@ services:
       - FLASK_APP=app.py
       - FLASK_ENV=production
       - SQLALCHEMY_DATABASE_URI=sqlite:///data/devices.db
+      - PORT=8088  # 添加端口环境变量
