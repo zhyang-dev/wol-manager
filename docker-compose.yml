@@ -1,18 +1,13 @@
-version: '3.8'
-
 services:
   web:
     build: .
-    ports:
-      - "8088:8088"
+    container_name: wol-manager
     volumes:
       - ./data:/app/data
     restart: unless-stopped
     network_mode: "host"  # 使用主机网络模式，这对于Wake-on-LAN功能是必需的
-    cap_add:
-      - NET_ADMIN  # 添加网络管理权限，用于发送Wake-on-LAN包
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=production
-      - SQLALCHEMY_DATABASE_URI=sqlite:///data/devices.db
+      - SQLALCHEMY_DATABASE_URI=sqlite:////app/data/devices.db
       - PORT=8088  # 添加端口环境变量
