@@ -287,7 +287,7 @@
                 <i class="bi bi-download"></i>
                 <span class="btn-text">{{ language.export }}</span>
             </button>
-            <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">
+            <button class="btn btn-warning" onclick="showEditDeviceModal()">
                 <i class="bi bi-upload"></i>
                 <span class="btn-text">{{ language.import }}</span>
             </button>
@@ -494,7 +494,7 @@
                             <button class="btn btn-info" onclick="checkStatus(${device.id})">
                                 <i class="bi bi-arrow-repeat"></i> ${currentLanguage.status}
                             </button>
-                            <button class="btn btn-warning" onclick="showEditDeviceModal(${JSON.stringify(device)})">
+                            <button class="btn btn-warning" onclick="showEditDeviceModal(${JSON.stringify(device).replace(/"/g, '&quot;')})">
                                 <i class="bi bi-pencil"></i> ${currentLanguage.edit_device}
                             </button>
                             <button class="btn btn-danger" onclick="deleteDevice(${device.id})">
