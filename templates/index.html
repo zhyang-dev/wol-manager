@@ -624,6 +624,17 @@
         }
 
         async function checkStatus(id) {
+            // 设置状态为checking
+            const statusBadge = document.getElementById(`status-${id}`);
+            if (statusBadge) {
+                statusBadge.className = 'status-badge';
+                statusBadge.innerHTML = `
+                    <i class="bi bi-circle-fill"></i>
+                    <span class="status-text">${currentLanguage.checking}</span>
+                `;
+                statusBadge.title = currentLanguage.checking;
+            }
+            
             try {
                 const response = await fetch(`/api/devices/${id}/status`);
                 const result = await response.json();
