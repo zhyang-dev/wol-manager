@@ -1,6 +1,7 @@
 services:
   web:
     build: .
+    image: wol-manager:latest
     container_name: wol-manager
     volumes:
       - ./data:/app/data
