@@ -12,3 +12,5 @@ services:
       - FLASK_ENV=production
       - SQLALCHEMY_DATABASE_URI=sqlite:////app/data/devices.db
       - PORT=8088  # 添加端口环境变量
+      - LOGIN_USERNAME=admin
+      - LOGIN_PASSWORD=1234

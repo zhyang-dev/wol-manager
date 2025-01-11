@@ -8,7 +8,9 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
     FLASK_APP=app.py \
     FLASK_ENV=production \
-    PORT=8088
+    PORT=8088 \
+    LOGIN_USERNAME=admin \
+    LOGIN_PASSWORD=1234
 
 # 复制所有项目文件
 COPY . .

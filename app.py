@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime
 import json
 import os
@@ -9,7 +10,21 @@ import ipaddress
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:////app/data/devices.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')
+app.config['REMEMBER_COOKIE_DURATION'] = 604800  # 7 days in seconds
+
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -75,13 +90,51 @@ def check_device_status(ip):
     except Exception:
         return False
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('redirect_to_default_language'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        remember = request.form.get('remember')
+        
+        # 从环境变量获取用户名和密码
+        env_username = os.getenv('LOGIN_USERNAME', 'admin')
+        env_password = os.getenv('LOGIN_PASSWORD', '1234')
+        
+        if username == env_username and password == env_password:
+            user = User.query.filter_by(username=username).first()
+            if not user:
+                # 如果用户不存在则创建
+                user = User(username=username, password=password)
+                db.session.add(user)
+                db.session.commit()
+            
+            login_user(user, remember=remember)
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('redirect_to_default_language'))
+        else:
+            flash('用户名或密码错误')
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
 @app.route('/')
+@login_required
 def redirect_to_default_language():
     # 检查cookie中的语言设置
     lang = request.cookies.get('lang', 'en')
     return redirect(f'/{lang}/')
 
 @app.route('/set_language/<lang>')
+@login_required
 def set_language(lang):
     # 验证语言是否有效
     with open('languages.json', 'r', encoding='utf-8') as f:
@@ -93,6 +146,7 @@ def set_language(lang):
     return jsonify({'status': 'success', 'lang': lang})
 
 @app.route('/<lang>/')
+@login_required
 def index(lang='en'):
     with open('languages.json', 'r', encoding='utf-8') as f:
         languages = json.load(f)
