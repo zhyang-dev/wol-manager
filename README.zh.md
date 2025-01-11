@@ -3,6 +3,8 @@
 
 这是一个基于Flask的Web应用程序，用于管理和监控局域网内支持Wake-on-LAN功能的设备。
 
+![](assets/demo.zh.png)
+
 ## 功能特点
 
 - 添加和管理网络设备

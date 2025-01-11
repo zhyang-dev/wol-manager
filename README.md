@@ -3,6 +3,8 @@
 
 A Flask-based web application for managing and monitoring Wake-on-LAN enabled devices on your local network.
 
+![](assets/demo.png)
+
 ## Features
 
 - Add and manage network devices
