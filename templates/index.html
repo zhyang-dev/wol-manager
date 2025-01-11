@@ -410,8 +410,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
     <script>
         // 在全局作用域存储语言数据
-        const currentLanguage = {{ language|tojson|safe }};
-        const currentLang = "{{ lang }}";
+        const currentLanguage = JSON.parse('{{ language|tojson|safe }}');
+        const currentLang = JSON.parse('{{ lang|tojson|safe }}');
 
         // 模态框实例
         let addModal, editModal, languageModal;
@@ -728,8 +728,24 @@
         }
 
         function changeLanguage(lang) {
+            // 直接在前端设置cookie
+            document.cookie = `lang=${lang}; path=/; max-age=${365*24*60*60}`;
+            // 立即重定向
             window.location.href = '/' + lang + '/';
         }
+
+        // 页面加载时检查cookie
+        document.addEventListener('DOMContentLoaded', function() {
+            const lang = document.cookie.split('; ')
+                .find(row => row.startsWith('lang='))
+                ?.split('=')[1];
+            
+            // 如果当前URL的语言与cookie不一致，重定向
+            const currentLang = window.location.pathname.split('/')[1];
+            if (lang && lang !== currentLang) {
+                window.location.href = '/' + lang + '/';
+            }
+        });
     </script>
 </body>
 </html>

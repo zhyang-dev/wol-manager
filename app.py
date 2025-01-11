@@ -77,7 +77,20 @@ def check_device_status(ip):
 
 @app.route('/')
 def redirect_to_default_language():
-    return redirect('/en/')
+    # 检查cookie中的语言设置
+    lang = request.cookies.get('lang', 'en')
+    return redirect(f'/{lang}/')
+
+@app.route('/set_language/<lang>')
+def set_language(lang):
+    # 验证语言是否有效
+    with open('languages.json', 'r', encoding='utf-8') as f:
+        languages = json.load(f)
+    if lang not in languages:
+        return jsonify({'status': 'error', 'message': 'Invalid language'}), 400
+    
+    # 返回成功响应，cookie由前端设置
+    return jsonify({'status': 'success', 'lang': lang})
 
 @app.route('/<lang>/')
 def index(lang='en'):
