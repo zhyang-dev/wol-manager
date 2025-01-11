@@ -279,19 +279,19 @@
 
     <div class="container">
         <div class="actions-container">
-            <button class="btn btn-primary" onclick="showAddDeviceModal()">
+            <button class="btn-menu btn-1" onclick="showAddDeviceModal()">
                 <i class="bi bi-plus-lg"></i>
                 <span class="btn-text">{{ language.add_device }}</span>
             </button>
-            <button class="btn btn-success" onclick="exportDevices()">
+            <button class="btn-menu btn-2" onclick="exportDevices()">
                 <i class="bi bi-download"></i>
                 <span class="btn-text">{{ language.export }}</span>
             </button>
-            <button class="btn btn-warning" onclick="showEditDeviceModal()">
+            <button class="btn-menu btn-3" onclick="document.getElementById('importFile').click()">
                 <i class="bi bi-upload"></i>
                 <span class="btn-text">{{ language.import }}</span>
             </button>
-            <button class="btn btn-info" onclick="showLanguageModal()">
+            <button class="btn-menu btn-4" onclick="showLanguageModal()">
                 <i class="bi bi-globe"></i>
                 <span class="btn-text">{{ "Change Language" if lang == "en" else "切换语言" }}</span>
             </button>
