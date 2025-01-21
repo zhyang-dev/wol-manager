@@ -1,0 +1,261 @@
+/* Title and header styling */
+.page-title {
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #1a237e, #0d47a1);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.page-title h1 {
+    margin: 0;
+    font-size: 2.2em;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Actions container responsive design */
+.actions-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+/* Top button group styling */
+.actions-container .btn {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s;
+}
+
+.actions-container .btn:hover {
+    background-color: #e0e0e0;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.actions-container .btn:active {
+    background-color: #d0d0d0;
+    color: #000;
+    transform: translateY(0);
+}
+
+/* Responsive breakpoints for action buttons */
+@media (max-width: 1200px) {
+    .actions-container .btn {
+        flex: 0 0 calc(50% - 5px);
+    }
+}
+
+@media (max-width: 768px) {
+    .actions-container .btn {
+        flex: 0 0 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .actions-container .btn {
+        padding: 10px 15px;
+    }
+    .actions-container .btn i {
+        font-size: 1.1em;
+    }
+}
+
+/* Device cards container */
+.devices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 0 1rem;
+}
+
+/* Device card styling */
+.device-card {
+    height: 100%;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    background: white;
+    overflow: hidden;
+}
+
+.device-card .card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+}
+
+.device-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.device-name {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.device-info {
+    flex-grow: 1;
+    margin-bottom: 1.2rem;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.info-row:hover {
+    background: #e9ecef;
+}
+
+.info-label {
+    color: #6c757d;
+    font-size: 0.9em;
+    font-weight: 500;
+    min-width: 120px;
+}
+
+.info-value {
+    color: #2c3e50;
+    font-family: monospace;
+    font-size: 0.95em;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8f9fa;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.status-badge.online {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.offline {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-badge i {
+    font-size: 0.8em;
+}
+
+.device-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: auto;
+}
+
+.device-actions .btn {
+    padding: 10px;
+    font-size: 0.95em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.device-actions .btn i {
+    font-size: 1.1em;
+}
+
+@media (max-width: 576px) {
+    .device-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Modal responsiveness */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+/* Language modal styling */
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.language-option:hover {
+    background-color: #f8f9fa;
+}
+
+.language-option img {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+}
+
+.language-option.active {
+    background-color: #e3f2fd;
+}
+
+.language-name {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+/* Button group styling */
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.btn-group .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-group .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-group .btn i {
+    font-size: 1.1em;
+}
